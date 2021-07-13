@@ -2,21 +2,26 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from src.MainWindow import *
 from src.Api import *
 
+import threading
 
-
-def Search(lastSearchQuery):
-    searchQuery = ui.lineEdit.text()
-
-    if lastSearchQuery == searchQuery:
-        return
-
-
+def BackgroundSearch(searchQuery , lastSearchQuery):
     ui.SearchMovies.clear()
     searchResult = Request.GetSearchMovie(searchQuery)
     lastSearchQuery = searchQuery
 
     for movie in searchResult:
         ui.SearchMovies.addItem(movie.name)
+
+
+def Search(lastSearchQuery):
+
+    searchQuery = ui.lineEdit.text()
+    if lastSearchQuery == searchQuery:
+        return
+
+    searchThread = threading.Thread(target=BackgroundSearch , args=(searchQuery , lastSearchQuery))
+    searchThread.run()
+
 
 
 def OnCreated():
