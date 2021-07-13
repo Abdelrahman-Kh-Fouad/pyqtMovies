@@ -5,5 +5,5 @@ if __name__ == '__main__':
     x.TopMovies()
     print(x.urlRequest)
     request = requests.get( x.urlRequest)
-    for _ in Request.GetTopMovies():
+    for _ in Request.GetSearchMovie("spiderman"):
         print(_)
