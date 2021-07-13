@@ -1,6 +1,6 @@
 from src.Movie import Movie
 from src.Const import *
-import json
+import requests
 
 
 class API:
@@ -27,8 +27,21 @@ class API:
         self.AddPage()
 
 
-    @staticmethod
-    def JsonToMovies(jsonFile):
+
+
+
+class Request :
+    @classmethod
+    def GetTopMovies(cls)->list:
+        apiProcess = API()
+        apiProcess.TopMovies()
+
+        movieRequest = requests.get(apiProcess.urlRequest)
+        return cls.JsonToMovies(movieRequest.json())
+
+
+    @classmethod
+    def JsonToMovies(cls , jsonFile):
         result =[]
         for movieDic in jsonFile['results']:
             result.append(Movie(int(movieDic['id'])
@@ -37,12 +50,3 @@ class API:
                                 ,movieDic['vote_average']))
 
         return result
-
-class Request :
-    @classmethod
-    def GetTopMovies(cls)->list:
-        pass
-
-
-
-

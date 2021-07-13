@@ -1,9 +1,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from src.MainWindow import *
+from src.Api import *
 
 
-
-
+def onCreated():
+    movies = Request.GetTopMovies()
+    for movie in movies:
+        ui.TopMovies.addItem(movie.name)
 
 
 if __name__ == "__main__":
@@ -14,8 +17,7 @@ if __name__ == "__main__":
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
 
-    ui.TopMovies.addItem("ad")
-    
+    onCreated()
 
 
     MainWindow.show()
