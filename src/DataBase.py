@@ -1,19 +1,17 @@
 import sqlite3
 import sqlite3
 from sqlite3 import Error
+from src.Const import *
 
 class DataBase:
 
-    @classmethod
-    def init(cls , path):
-        cls.dbConnection = cls.createConnection(path)
-        cls.dbCursor = cls.dbConnection.cursor()
-
-        cls.dbCursor.execute('DROP TABLE IF EXISTS movies')
+    def __init__(self):
+        self.dbConnection = self.CreateConnection(PATH)
+        self.dbCursor = self.dbConnection.cursor()
+        self.dbCursor.execute('CREATE TABLE IF NOT EXISTS movies (id INTEGER PRIMARY KEY, title TEXT , year TEXT , rate TEXT , description TEXT);')
 
 
-    @classmethod
-    def CreateConnection(path)->sqlite3.Connection:
+    def CreateConnection(self , path)->sqlite3.Connection:
         connection = None
         try:
             connection = sqlite3.connect(path)
@@ -22,3 +20,15 @@ class DataBase:
 
         return connection
 
+
+    def InsertMovie(self , movie):
+        self.dbCursor.execute('INSERT INTO movies (id, title , year , rate , description) VALUES (?, ? , ? , ? , ?)',
+                    (int(movie.id), movie.title , movie.year , movie.rate , movie.description))
+
+    def DeleteMovie(self ,movie):
+        self.dbCursor.execute('DELETE FROM movie WHERE id = ?' ,movie.id)
+
+
+    def GetAll(self)->list:
+        self.dbCursor.execute('SELECT * FROM movie')
+        return self.dbCursor.fetchall()

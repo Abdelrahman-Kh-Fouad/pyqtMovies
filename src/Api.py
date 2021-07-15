@@ -68,6 +68,7 @@ class Request :
     def JsonToMovies(cls , jsonFile):
         result =[]
         for movieDic in jsonFile['results']:
+
             result.append(Movie(int(movieDic['id'])
                                 ,movieDic['title']
                                 ,movieDic['release_date']
