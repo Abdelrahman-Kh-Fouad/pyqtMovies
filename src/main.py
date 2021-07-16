@@ -3,54 +3,61 @@ from src.MainWindow import *
 from src.Api import *
 from src.DataBase import *
 from src.MovieWidget import *
+from src.DescriptionDialog import *
 
 import threading
+
+
+
+def FillList(movies :list , QList:QtWidgets.QListWidget ):
+    for movie in movies:
+        movieItem = MovieWidget(movie)
+        movieListItem = QtWidgets.QListWidgetItem(QList)
+        movieListItem.setSizeHint(movieItem.sizeHint())
+        Movie.ConvertFromMovieToItem(movie , movieListItem)
+        QList.addItem(movieListItem)
+        QList.setItemWidget(movieListItem , movieItem)
+
+
 
 def BackgroundSearch(searchQuery , lastSearchQuery):
     ui.SearchMovies.clear()
     searchResult = Request.GetSearchMovie(searchQuery)
     lastSearchQuery = searchQuery
-
-    for movie in searchResult:
-        ui.SearchMovies.addItem(QtWidgets.QListWidgetItem(MovieWidget(Form=ui.SearchMovies, movie=movie)))
-
+    FillList(searchResult , ui.SearchMovies )
 
 def Search(lastSearchQuery):
 
     searchQuery = ui.lineEdit.text()
     if lastSearchQuery == searchQuery:
         return
-
     searchThread = threading.Thread(target=BackgroundSearch , args=(searchQuery , lastSearchQuery))
     searchThread.run()
 
 
 
 def AddToDatabase(item :QtWidgets.QListWidgetItem ):
+
     movie = Movie.ConvertFromItemToMovie(item)
     dataBase.InsertMovie(movie)
-
+    UpdateDatabase()
 
 
 def UpdateDatabase():
-    pass
+    ui.favoritMovies.clear()
+    FillList(dataBase.GetAll() , ui.favoritMovies)
 
 
+def ShowDescription(item : QtWidgets.QListWidgetItem):
+    movie = Movie.ConvertFromItemToMovie(item)
+    discription = MovieDiscrestion(movie)
+    discription.show()
 
 
 def OnCreated():
     movies = Request.GetTopMovies()
-    for movie in movies:
-        print(movie.title)
-        movieItem = MovieWidget(movie)
-        movieListItem = QtWidgets.QListWidgetItem(ui.TopMovies)
-        movieListItem.setSizeHint(movieItem.sizeHint())
-
-        Movie.ConvertFromMovieToItem(movie , movieListItem)
-
-        ui.TopMovies.addItem(movieListItem)
-        ui.TopMovies.setItemWidget(movieListItem , movieItem)
-
+    FillList(movies , ui.TopMovies)
+    FillList(dataBase.GetAll() , ui.favoritMovies)
 
 
 
@@ -70,6 +77,8 @@ if __name__ == "__main__":
 
     ui.searchButton.clicked.connect(lambda : Search(lastSearchQuery))
     ui.TopMovies.itemClicked.connect(AddToDatabase)
-
+    ui.SearchMovies.itemClicked.connect(AddToDatabase)
+    ui.TopMovies.itemDoubleClicked.connect(ShowDescription)
+    ui.SearchMovies.itemDoubleClicked.connect(ShowDescription)
     MainWindow.show()
     sys.exit(app.exec_())

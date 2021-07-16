@@ -21,7 +21,7 @@ class MovieWidget(QtWidgets.QWidget):
         self.textQVBoxLayout.addWidget(self.movieRate)
         self.allQHBoxLayout = QtWidgets.QHBoxLayout()
         self.iconQLabel = QtWidgets.QLabel()
-        self.allQHBoxLayout.addWidget(self.iconQLabel, 0)
+        self.allQHBoxLayout.addWidget(self.iconQLabel, 0.5)
         self.allQHBoxLayout.addLayout(self.textQVBoxLayout, 1)
         self.setLayout(self.allQHBoxLayout)
         # setStyleSheet
